@@ -39,7 +39,6 @@ router.post("/posts", authMiddleware, async (req, res) => {
 router.get("/posts/:postId", async (req, res) => {
   // "/posts/:_id" 경로에 대한 GET 요청을 보낸다.
   const { postId } = req.params;
-  console.log(postId);
 
   try {
     const posts = await Posts.findOne({ where: { postId } }); // _id에 해당하는 게시물을 조회한다
