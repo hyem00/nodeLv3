@@ -1,17 +1,33 @@
 const express = require("express"); // express module을 express 변수에 할당
 const router = express.Router(); // express.Router()로 라우터 객체 생성
 const authMiddleware = require("../middlewares/auth-middleware.js"); // "../middlewares/auth-middleware.js" 파일에서 인증 미들웨어를 가져온다.
-const { Users, Posts } = require("../models");
+const { Users, Posts, Likes } = require("../models");
+const sequelize = require("sequelize");
 const { Op } = require("sequelize");
 
 // // 전체 게시글 조회 API
 router.get("/posts", async (req, res) => {
   // "/posts" 경로에 대한 GET 요청을 보낸다
   try {
-    const posts = await Posts.findAll({ order: [["createdAt", "desc"]] });
-    res.json({ data: posts }); // 조회된 게시글을 JSON 형식으로 응답한다
+    const posts = await Posts.findAll({
+      order: [["createdAt", "desc"]],
+      include: [
+        {
+          model: Likes,
+          // sequelize 에서 조인문 사용하는 방법임 postId를 기준으로 left 조인했음
+          attributes: [
+            [sequelize.fn("COUNT", sequelize.col("Likes.likeId")), "likeCount"],
+          ],
+          // 이게 left 조인 설정하는거임
+          required: false,
+        },
+      ],
+      group: ["Posts.postId"],
+    });
+    res.json({ data: posts });
   } catch (error) {
-    res.status(400).json({ error: "게시글 조회에 실패했습니다." }); // 오류가 발생한다면 json형식으로 error메세지를 응답한다.
+    console.log(error);
+    res.status(400).json({ error: "게시글 조회에 실패했습니다." });
   }
 });
 
