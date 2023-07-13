@@ -1,0 +1,31 @@
+const UserService = require("../services/users.service");
+
+class UserController {
+  userService = new UserService();
+
+  signupUser = async (req, res) => {
+    const { nickname, password, confirm } = req.body;
+
+    try {
+      await this.userService.createUser(nickname, password, confirm);
+      return res.status(201).json({ message: "계정이 생성되었습니다" });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "계정생성에 실패하였습니다" + error.message });
+    }
+  };
+  loginUser = async (req, res) => {
+    const { nickname, password } = req.body;
+    try {
+      const token = await this.userService.loginUser(nickname, password);
+      res.cookie("Authorization", `Bearer ${token}`, {
+        expires: new Date(Date.now() + 3600000),
+      }); // 1시간 동안 유효한 쿠키 설정
+      return res.status(200).json({ message: "로그인에 성공하였습니다." });
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
+  };
+}
+module.exports = UserController;
