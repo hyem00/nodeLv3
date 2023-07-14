@@ -22,14 +22,11 @@ class UserController {
   loginUser = async (req, res) => {
     const { nickname, password } = req.body;
     try {
-      const { status, message, token } = await this.userService.loginUser(
-        nickname,
-        password
-      );
+      const token = await this.userService.loginUser(nickname, password);
       res.cookie("Authorization", `Bearer ${token}`, {
         expires: new Date(Date.now() + 3600000),
       }); // 1시간 동안 유효한 쿠키 설정
-      return res.status(status).json({ message, token });
+      return res.status(201).json({ data: token });
     } catch (error) {
       return res.status(400).json({ message: error.message });
     }
