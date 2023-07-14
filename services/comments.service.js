@@ -5,14 +5,15 @@ class CommentsService {
 
   findAllComment = async (postId) => {
     try {
-      if (!postId) {
+      const allComment = await this.commentsRepository.findAllComment(postId);
+      console.log(allComment);
+      if (!allComment[0]) {
         return {
           status: 404,
           message: "댓글을 작성할 게시글이 존재하지 않습니다",
         };
       }
-      const allComment = await this.commentsRepository.findAllComment(postId);
-      return allComment.map((comment) => {
+      const comments = allComment.map((comment) => {
         return {
           PostId: comment.PostId,
           commentId: comment.commentId,
@@ -21,6 +22,11 @@ class CommentsService {
           updatedAt: comment.updatedAt,
         };
       });
+      return {
+        status: 200,
+        message: "댓글이 조회되었습니다",
+        comments,
+      };
     } catch (error) {
       console.log(error);
       return {
@@ -45,7 +51,12 @@ class CommentsService {
         };
       }
       await this.commentsRepository.createComment(userId, comment, postId);
-    } catch {
+      return {
+        status: 200,
+        message: "댓글이 생성되었습니다",
+      };
+    } catch (error) {
+      console.log(error);
       return {
         status: 400,
         message: "댓글 작성에 실패하였습니다",
@@ -83,7 +94,15 @@ class CommentsService {
           message: "댓글의 수정 권한이 존재하지 않습니다",
         };
       }
-      await this.commentsRepository.commentUpdate(postId, commentId, comment);
+      const comments = await this.commentsRepository.commentUpdate(
+        postId,
+        commentId,
+        comment
+      );
+      return {
+        status: 200,
+        message: "댓글이 생성되었습니다",
+      };
     } catch (error) {
       console.log(error);
       return {
@@ -118,6 +137,10 @@ class CommentsService {
         };
       }
       await this.commentsRepository.commentDelete(postId, commentId);
+      return {
+        status: 200,
+        message: "댓글이 삭제되었습니다",
+      };
     } catch (error) {
       console.log(error);
       return {

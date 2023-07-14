@@ -52,11 +52,9 @@ class PostRepository {
     return post;
   };
 
-  deletePost = async (postId, userId) => {
+  deletePost = async (postId) => {
     const post = await Posts.destroy({
-      where: {
-        [Op.and]: [{ postId }, { UserId: userId }],
-      },
+      where: { postId },
     });
     return post;
   };

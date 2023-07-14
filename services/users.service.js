@@ -21,7 +21,12 @@ class UserService {
       } else if (password !== confirm) {
         throw new Error("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       } else if (password === confirm) {
-        await this.userRepository.createUser(nickname, password);
+        const user = await this.userRepository.createUser(nickname, password);
+        return {
+          status: 201,
+          message: "회원가입에 성공하였습니다",
+          user,
+        };
       }
     } catch (error) {
       console.log(error);

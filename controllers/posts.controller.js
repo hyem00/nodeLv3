@@ -6,48 +6,53 @@ class PostsController {
 
   getPost = async (req, res, next) => {
     // 서비스 계층에 구현된 findAllPost 로직을 실행합니다.
-    const posts = await this.postService.findAllPost();
-    res.status(200).json({ data: posts });
+    const { status, message, posts } = await this.postService.findAllPost();
+    res.status(status).json({ message, posts });
   };
 
   createPost = async (req, res, next) => {
     const { title, content } = req.body;
     const { userId } = res.locals;
     // 서비스 계층에 구현된 createPost 로직을 실행합니다.
-    const createPostData = await this.postService.createPost(
+    const { status, message } = await this.postService.createPost(
       userId,
       title,
       content
     );
 
-    res.status(201).json({ data: createPostData });
+    res.status(status).json({ message });
   };
 
   getDetailPost = async (req, res, next) => {
     const { postId } = req.params;
 
-    const posts = await this.postService.findDetailPost(postId);
-    res.status(201).json({ data: posts });
+    const { status, message, posts } = await this.postService.findDetailPost(
+      postId
+    );
+    res.status(status).json({ message, posts });
   };
 
   updatePost = async (req, res, next) => {
     const { postId } = req.params;
     const { title, content } = req.body;
     const { userId } = res.locals;
-    const posts = await this.postService.updatePost(
+    const { status, message } = await this.postService.updatePost(
       postId,
       userId,
       title,
       content
     );
-    res.status(200).json({ data: posts });
+    res.status(status).json({ message });
   };
 
   deletePost = async (req, res, next) => {
     const { postId } = req.params;
     const { userId } = res.locals;
-    await this.postService.deletePost(postId, userId);
-    res.status(200).json({ message: "정상적으로 삭제되었습니다" });
+    const { status, message } = await this.postService.deletePost(
+      postId,
+      userId
+    );
+    res.status(status).json({ message });
   };
 }
 
